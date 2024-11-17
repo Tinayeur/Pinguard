@@ -1,0 +1,82 @@
+{
+    "machines": [
+        {
+            "id": 1,
+            "name": "WEB-01",
+            "ip": "93.95.117.3",
+            "category": "WEB",
+            "tags": [
+                "Web",
+                "Angers"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "WEB-02",
+            "ip": "93.95.117.3",
+            "category": "WEB",
+            "tags": [
+                "Web",
+                "Angers"
+            ]
+        },
+        {
+            "id": 3,
+            "name": "ROUTEUR",
+            "ip": "93.95.117.125",
+            "category": "TELECOM",
+            "tags": [
+                "Réseaux",
+                "DDOS"
+            ]
+        },
+        {
+            "id": 4,
+            "name": "SECURPROX-01",
+            "ip": "93.95.117.3",
+            "category": "CLOUD",
+            "tags": [
+                "Intel",
+                "Angers"
+            ]
+        },
+        {
+            "id": 5,
+            "name": "SECURGAME-01",
+            "ip": "93.95.117.3",
+            "category": "CLOUD",
+            "tags": [
+                "Ryzen",
+                "Angers"
+            ]
+        }
+    ],
+    "categories": [
+        {
+            "id": 1,
+            "name": "WEB"
+        },
+        {
+            "id": 2,
+            "name": "CLOUD"
+        },
+        {
+            "id": 3,
+            "name": "TELECOM"
+        }
+    ],
+    "alertMessage": "⚠️ Maintenance sur le serveur ⚠️",
+    "settings": {
+        "siteTitle": "pinguard - Status",
+        "themeColor": "#2980b9",
+        "darkMode": false,
+        "logo": "/uploads/logo-1731800420074-786703304.png",
+        "favicon": "/uploads/favicon-1731800420075-454434099.ico",
+        "siteDescription": "descritpion du site de status des machines",
+        "displayDescription": true,
+        "siteH1": "Status des services",
+        "backgroundColor": "#afb0b1",
+        "primaryColor": "#408ece",
+        "secondaryColor": "#3f7eb3"
+    }
+}
