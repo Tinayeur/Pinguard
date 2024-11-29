@@ -1,0 +1,117 @@
+<%- include('./includes/head') %>
+<%- include('./includes/navbar_g') %>
+
+<style>
+
+    .dashboard {
+        display: flex;
+        color: #ffffff;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        margin-left: 250px; /* Pour la largeur de la barre de navigation */
+        background-color: <%= settings.backgroundColor || '#ccc9c9' %>;
+    }
+
+    .form-container {
+        background-color: <%= settings.secondaryColor || '#e74c3c' %>;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        width: 100%;
+        max-width: 600px; /* Limite la largeur pour rester centré */
+        margin: auto;
+    }
+
+    .form-container h1 {
+        font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 200px;
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: none;
+        background-color: #ffffff;
+        color: #333;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+        background-color: <%= settings.primaryColor || '#2980b9' %>;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        font-size: 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: <%= settings.secondaryColor || '#e74c3c' %>;
+    }
+</style>
+
+<div class="dashboard">
+    <div class="form-container">
+        <h1>Gestion des Alertes</h1>
+        <form id="alert-form">
+            <textarea name="alertMessage" id="alert-message" placeholder="Entrez votre message d'alerte ici..."><%= alertMessage %></textarea>
+            <button type="submit">Enregistrer</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('alert-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const alertMessage = document.getElementById('alert-message').value.trim();
+
+        try {
+            const response = await fetch('/api/alert', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ alertMessage }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert(`Erreur : ${error.message}`);
+                return;
+            }
+
+            alert('Message d\'alerte mis à jour avec succès.');
+        } catch (err) {
+            console.error('Erreur lors de la mise à jour de l\'alerte :', err);
+            alert('Une erreur est survenue lors de la mise à jour.');
+        }
+    });
+</script>
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#alert-message', // Cible le textarea
+        plugins: 'lists link image code preview',
+        toolbar: 'undo redo | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | link image | preview code',
+        menubar: false, // Supprime la barre de menu pour un design plus propre
+        height: 300,
+        branding: false, // Supprime le branding TinyMCE en bas
+        content_style: "body { font-family: Arial, sans-serif; font-size: 14px; }" // Applique un style de base
+    });
+</script>
+
+
+
+<%- include('./includes/footer2') %>

@@ -1,0 +1,100 @@
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 250px;
+            background-color: #5baef1;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+            margin-bottom: 20px; /* Moins d'espace sous le logo */
+        }
+
+        .sidebar .logo img {
+            width: 80px; /* Taille réduite pour plus de place */
+            height: auto;
+        }
+
+        .sidebar .menu {
+            flex-grow: 0; /* Les menus ne s'étendent pas */
+            padding-top: 10px; /* Rapprocher les menus du haut */
+        }
+
+        .sidebar .menu a {
+            display: block;
+            padding: 10px 20px; /* Ajuste la taille des éléments */
+            text-decoration: none;
+            color: #fff;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar .menu a:hover {
+            background-color: #3f7eb3;
+        }
+
+
+        .sidebar .logout {
+            margin-top: auto; /* Pousse le bouton vers le bas */
+            padding: 20px;
+        }
+
+        .sidebar .logout button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background-color: #3f7eb3;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar .logout button:hover {
+            background-color: #408ece;
+        }
+    </style>
+<div class="sidebar">
+        <!-- Logo centré -->
+        <div class="logo">
+            <img src="<%= settings.logo %>" alt="Logo">
+        </div>
+
+        <!-- Menu principal -->
+        <div class="menu">
+            <a href="/admin" class="active">Accueil</a>
+            <a href="/admin/machines">Machine</a>
+            <a href="/admin/categories">Catégories</a>
+            <a href="/admin/alertes">Message Alerte</a>
+            <a href="/admin/parametres">Parametre du site</a>
+        </div>
+
+        <!-- Bouton de déconnexion -->
+        <div class="logout">
+            <form action="/admin/logout" method="GET">
+                <button type="submit">Déconnexion</button>
+            </form>
+        </div>
+    </div>

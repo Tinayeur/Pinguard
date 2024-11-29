@@ -1,0 +1,101 @@
+<%- include('./includes/head') %>
+<%- include('./includes/navbar_g') %>
+
+<div class="dashboard">
+    <h1>Tableau de bord</h1>
+    <div class="stats">
+        <!-- Boîte : Machines totales -->
+        <div class="stat-box">
+            <h2>Machines actives</h2>
+            <p><%= totalMachines %></p>
+        </div>
+        <!-- Boîte : Machines en ligne -->
+        <div class="stat-box">
+            <h2>Machines en ligne</h2>
+            <p><%= onlineMachines %></p>
+        </div>
+        <!-- Boîte : Machines hors ligne -->
+        <div class="stat-box">
+            <h2>Machines hors ligne</h2>
+            <p><%= offlineMachines %></p>
+        </div>
+    </div>
+    <div class="actions">
+        <a href="/admin/machines" class="action-button">Gérer les Machines</a>
+        <a href="/admin/categories" class="action-button">Gérer les Catégories</a>
+    </div>
+</div>
+
+
+
+<style>
+
+    .dashboard {
+        flex-grow: 1;
+        padding: 20px;
+        margin-left: 250px;
+        background-color: <%= settings.backgroundColor || '#ccc9c9' %>;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    h1 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .stats {
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+    }
+
+    .stat-box {
+        flex: 1;
+        background-color: <%= settings.primaryColor || '#2980b9' %>;
+        color: white;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-box h2 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .stat-box p {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .actions {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .action-button {
+        background-color: <%= settings.primaryColor || '#2980b9' %>;
+        color: white;
+        text-decoration: none;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        text-align: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .action-button:hover {
+        background-color: <%= settings.secondaryColor || '#e74c3c' %>;
+    }
+</style>
+
+
+<%- include('./includes/footer2') %>

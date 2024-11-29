@@ -1,0 +1,410 @@
+<%- include('./includes/head') %>
+<%- include('./includes/navbar_g') %>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .machine-dashboard {
+        padding: 20px;
+        background-color: <%= settings.backgroundColor || '#ccc9c9' %>;
+        min-height: 100vh;
+        margin-left: 250px;
+    }
+
+    h1 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+        color: #555;
+        margin-bottom: 15px;
+    }
+
+    .form-container, .machine-list {
+        margin-bottom: 30px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    input, select, button {
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        background-color: <%= settings.secondaryColor || '#e74c3c' %>;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: <%= settings.primaryColor || '#ec7d7a' %>;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    th {
+        background-color: <%= settings.primaryColor || '#ec7d7a' %>;
+        color: white;
+    }
+
+    .actions button {
+        padding: 5px 10px;
+        margin-right: 5px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .actions button.modif {
+        background-color: <%= settings.secondaryColor || '#e74c3c' %>;
+        color: white;
+    }
+
+    .actions button.suppr {
+        background-color: <%= settings.primaryColor || '#ec7d7a' %>;
+        color: white;
+    }
+
+    .actions button.modif:hover {
+        background-color: <%= settings.primaryColor || '#ec7d7a' %>;
+    }
+
+    .actions button.suppr:hover {
+        background-color: <%= settings.secondaryColor || '#e74c3c' %>;
+    }
+
+    /* Styles pour les popups */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        display: none; /* Caché par défaut */
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 400px;
+        max-width: 90%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .modal-content h2 {
+        margin-top: 0;
+        font-size: 1.5rem;
+    }
+
+    .modal-content .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #333;
+    }
+</style>
+
+<div class="machine-dashboard">
+    <h1>Gestion des Machines</h1>
+
+    <!-- Formulaire d'ajout de machine -->
+    <div class="form-container">
+        <h2>Ajouter une Machine</h2>
+        <form id="add-machine-form">
+            <input type="text" name="name" placeholder="Nom de la machine" required>
+            <input type="text" name="ip" placeholder="Adresse IP" required>
+            <select name="category" required>
+                <option value="" disabled selected>Catégorie</option>
+                <option value="WEB">WEB</option>
+                <option value="CLOUD">CLOUD</option>
+                <option value="TELECOM">TELECOM</option>
+            </select>
+            <input type="text" name="tags" placeholder="Tags (séparés par des virgules)">
+            <button type="submit">Ajouter</button>
+        </form>
+    </div>
+
+    <!-- Liste des machines -->
+    <div class="machine-list">
+        <h2>Machines existantes</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>IP</th>
+                    <th>Catégorie</th>
+                    <th>Tags</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="machine-list">
+                <% machines.forEach(machine => { %>
+                <tr>
+                    <td><%= machine.name %></td>
+                    <td><%= machine.ip %></td>
+                    <td><%= machine.category %></td>
+                    <td><%= machine.tags.join(', ') %></td>
+                    <td class="actions">
+                        <button class="modif" onclick="editMachine(<%= machine.id %>)">Modifier</button>
+                        <button class="suppr" onclick="confirmDeleteMachine(<%= machine.id %>)">Supprimer</button>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal" id="edit-modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('edit-modal')">&times;</span>
+        <h2>Modifier une Machine</h2>
+        <form id="edit-machine-form">
+            <input type="hidden" name="id" id="edit-id">
+            <input type="text" name="name" id="edit-name" placeholder="Nom de la machine" required>
+            <input type="text" name="ip" id="edit-ip" placeholder="Adresse IP" required>
+            <select name="category" id="edit-category" required>
+                <option value="" disabled>Catégorie</option>
+                <option value="WEB">WEB</option>
+                <option value="CLOUD">CLOUD</option>
+                <option value="TELECOM">TELECOM</option>
+            </select>
+            <input type="text" name="tags" id="edit-tags" placeholder="Tags (séparés par des virgules)">
+            <button type="submit">Modifier</button>
+        </form>
+    </div>
+</div>
+
+<div class="modal" id="delete-modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('delete-modal')">&times;</span>
+        <h2>Confirmer la suppression</h2>
+        <p id="delete-machine-name">Voulez-vous vraiment supprimer cette machine ?</p>
+        <div class="modal-actions">
+            <button id="confirm-delete" class="danger">Oui, supprimer</button>
+            <button onclick="closeModal('delete-modal')">Annuler</button>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    // Charger les machines et peupler le tableau
+    async function loadMachines() {
+        const response = await fetch('/api/machines');
+        const machines = await response.json();
+
+        const machineList = document.getElementById('machine-list');
+        machineList.innerHTML = '';
+
+        machines.forEach(machine => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${machine.name}</td>
+                <td>${machine.ip}</td>
+                <td>${machine.category}</td>
+                <td>${machine.tags.join(', ')}</td>
+                <td class="actions">
+                    <button class="modif" onclick="editMachine(${machine.id})">Modifier</button>
+                    <button class="suppr" onclick="confirmDeleteMachine(${machine.id})">Supprimer</button>
+                </td>
+            `;
+            machineList.appendChild(row);
+        });
+    }
+    async function loadCategories() {
+        const response = await fetch('/api/categories');
+        const categories = await response.json();
+
+        // Mise à jour des options du formulaire d'ajout
+        const categorySelectAdd = document.querySelector('#add-machine-form select[name="category"]');
+        const categorySelectEdit = document.querySelector('#edit-machine-form select[name="category"]');
+
+        categorySelectAdd.innerHTML = '<option value="" disabled selected>Catégorie</option>';
+        categorySelectEdit.innerHTML = '<option value="" disabled>Catégorie</option>';
+
+        categories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.name;
+            option.textContent = category.name;
+
+            // Ajouter l'option à chaque select
+            categorySelectAdd.appendChild(option.cloneNode(true));
+            categorySelectEdit.appendChild(option);
+        });
+    }
+
+    
+
+    let machineToDelete = null; // Stocker l'ID de la machine à supprimer
+
+async function editMachine(id) {
+    console.log(`Modifier la machine avec l'ID : ${id}`);
+
+    const response = await fetch('/api/machines');
+    const machines = await response.json();
+    const machine = machines.find(m => m.id === id);
+
+    if (!machine) {
+        alert('Machine introuvable');
+        return;
+    }
+
+    // Pré-remplir les champs de la popup
+    document.getElementById('edit-id').value = machine.id;
+    document.getElementById('edit-name').value = machine.name;
+    document.getElementById('edit-ip').value = machine.ip;
+    document.getElementById('edit-category').value = machine.category;
+    document.getElementById('edit-tags').value = machine.tags.join(', ');
+
+    // Afficher la popup
+    document.getElementById('edit-modal').style.display = 'flex';
+}
+
+function confirmDeleteMachine(id) {
+    console.log(`Supprimer la machine avec l'ID : ${id}`);
+
+    fetch('/api/machines')
+        .then(response => response.json())
+        .then(machines => {
+            const machine = machines.find(m => m.id === id);
+
+            if (!machine) {
+                alert('Machine introuvable');
+                return;
+            }
+
+            machineToDelete = id;
+            document.getElementById('delete-machine-name').innerText = 
+                `Voulez-vous vraiment supprimer la machine "${machine.name}" ?`;
+
+            // Afficher la popup
+            document.getElementById('delete-modal').style.display = 'flex';
+        });
+}
+document.getElementById('add-machine-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    data.tags = data.tags ? data.tags.split(',').map(tag => tag.trim()) : [];
+
+    try {
+        const response = await fetch('/api/machines', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            alert(`Erreur : ${error.message}`);
+            return;
+        }
+
+        alert('Machine ajoutée avec succès.');
+        e.target.reset();
+        loadMachines(); // Recharge la liste des machines
+    } catch (err) {
+        console.error('Erreur lors de l\'ajout de la machine :', err);
+        alert('Une erreur est survenue lors de l\'ajout.');
+    }
+});
+
+document.getElementById('edit-machine-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    data.tags = data.tags ? data.tags.split(',').map(tag => tag.trim()) : [];
+
+    try {
+        const response = await fetch(`/api/machines/${data.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            alert(`Erreur : ${error.message}`);
+            return;
+        }
+
+        alert('Machine modifiée avec succès.');
+        closeModal('edit-modal'); // Ferme la popup
+        loadMachines(); // Recharge la liste des machines
+    } catch (err) {
+        console.error('Erreur lors de la modification de la machine :', err);
+        alert('Une erreur est survenue lors de la modification.');
+    }
+});
+
+document.getElementById('confirm-delete').addEventListener('click', async () => {
+    if (!machineToDelete) return;
+
+    await fetch(`/api/machines/${machineToDelete}`, {
+        method: 'DELETE',
+    });
+
+    machineToDelete = null;
+    closeModal('delete-modal');
+    loadMachinesetC();
+});
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+    console.log(`Popup ${modalId} fermée`);
+}
+
+    // Charger les machines au démarrage
+    // Charger les machines et les catégories au démarrage
+    async function loadMachinesAndCategories() {
+        await loadCategories();
+        await loadMachines();
+    }
+
+    loadMachinesAndCategories();
+</script>
+
+
+<%- include('./includes/footer2') %>

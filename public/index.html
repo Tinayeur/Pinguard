@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status des Machines</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #151635;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .category-title {
+            font-size: 1.5em;
+            margin-top: 20px;
+            color: #2980b9;
+        }
+        .status-table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+            background-color: #202040;
+            color: #ffffff;
+        }
+        .status-table th, .status-table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .status-table th {
+            background-color: #2980b9;
+            color: white;
+        }
+        .status-online {
+            color: #32cd32;
+            font-weight: bold;
+        }
+        .status-offline {
+            color: #ff6347;
+            font-weight: bold;
+        }
+        .status-icon {
+            font-size: 1.2em;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Status des Machines</h1>
+
+    <div id="categories"></div>
+    <canvas id="detail-canvas" width="200" height="100"></canvas>
+
+    <script>
+        async function fetchStatus() {
+            try {
+                const response = await fetch('/status');
+                const data = await response.json();
+                const categoriesContainer = document.getElementById('categories');
+
+                const categories = {};
+                data.forEach(machine => {
+                    if (!categories[machine.category]) {
+                        categories[machine.category] = [];
+                    }
+                    categories[machine.category].push(machine);
+                });
+
+                categoriesContainer.innerHTML = '';
+
+                for (const [category, machines] of Object.entries(categories)) {
+                    const categorySection = document.createElement('div');
+
+                    const title = document.createElement('h2');
+                    title.textContent = category;
+                    title.classList.add('category-title');
+                    categorySection.appendChild(title);
+
+                    const table = document.createElement('table');
+                    table.classList.add('status-table');
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Nom de la Machine</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${machines.map((machine) => `
+                                <tr>
+                                    <td>${machine.name}</td>
+                                    <td class="${machine.status === 'En ligne' ? 'status-online' : 'status-offline'}">
+                                        <span class="status-icon">${machine.status === 'En ligne' ? '🟢' : '🔴'}</span>
+                                        ${machine.status === 'En ligne' ? 'En Ligne' : 'Hors Ligne'}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    `;
+                    categorySection.appendChild(table);
+                    categoriesContainer.appendChild(categorySection);
+                }
+            } catch (error) {
+                console.error("Erreur lors de la récupération du statut :", error);
+            }
+        }
+
+        fetchStatus();
+        setInterval(fetchStatus, 5000);
+    </script>
+</body>
+</html>

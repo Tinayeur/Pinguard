@@ -1,0 +1,32 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= settings.siteTitle || "Statut - Mon Application" %></title>
+
+    <!-- Favicon -->
+    <% if (settings.favicon) { %>
+        <link rel="icon" href="<%= settings.favicon %>" type="image/x-icon">
+    <% } else { %>
+        <link rel="icon" href="/default-favicon.ico" type="image/x-icon">
+    <% } %>
+
+    <!-- Styles par défaut -->
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #2980b9;
+            padding: 10px;
+        }
+
+        header img {
+            max-height: 50px;
+        }
+    </style>
+</head>

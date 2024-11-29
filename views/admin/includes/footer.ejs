@@ -1,0 +1,93 @@
+<footer>
+    <div class="footer-container">
+        <p>&copy; <%= new Date().getFullYear() %> <%= settings.siteTitle || "Votre Site" %>. Tous droits réservés.</p>
+        <p class="pinguard-info">
+            Pinguard <a href="https://github.com/your-repo" target="_blank">v1.0.0</a>
+        </p>
+    </div>
+</footer>
+
+<style>
+    /* Réinitialisation globale */
+    html, body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        width: 100%;
+        overflow-x: hidden; /* Empêche le débordement horizontal */
+    }
+
+    /* Configuration générale */
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh; /* Hauteur minimale pour occuper tout l'écran */
+    }
+
+    .content {
+        flex: 1; /* Prend tout l'espace disponible avant le footer */
+    }
+
+    footer {
+        background-color: <%= settings.backgroundColor || '#ccc9c9' %>;
+        color: white;
+        padding: 20px 0;
+        text-align: center;
+        width: 100%; /* Prend toute la largeur */
+        margin: 0;
+        margin-top: 50px; /* Augmenté à 50px pour un écart plus grand */
+    }
+
+    .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-container p {
+        margin: 10px 0;
+    }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        gap: 15px;
+        margin: 10px 0 0;
+    }
+
+    .footer-links li {
+        display: inline;
+    }
+
+    .footer-links a {
+        color: #2980b9;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .footer-links a:hover {
+        text-decoration: underline;
+    }
+
+    /* Style spécifique pour la mention Pinguard */
+    .pinguard-info {
+        margin-top: 15px; /* Ajoute un espace au-dessus */
+        font-size: 0.9rem;
+        color: #fff;
+    }
+
+    .pinguard-info a {
+        color: #1abc9c; /* Couleur pour le lien */
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s;
+    }
+
+    .pinguard-info a:hover {
+        color: #16a085; /* Couleur au survol */
+        text-decoration: underline;
+    }
+</style>

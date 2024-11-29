@@ -1,0 +1,210 @@
+<%- include('./admin/includes/head') %>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: <%= settings.backgroundColor || '#ccc9c9' %>;
+        color: #fff;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        margin-top: 100px;
+        text-align: center;
+        color: #ffffff;
+        margin-bottom: 40px; /* Augmente l'écart avec la barre de recherche */
+    }
+
+    .description-box {
+        background-color: <%= settings.primaryColor || '#ec7d7a' %>;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 0 auto 40px auto; /* Centre la boîte et ajoute un espacement */
+        max-width: 800px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        font-size: 1rem;
+        color: #ccc;
+    }
+
+    .description-box p {
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .uptime-container {
+        background-color: #ffffff;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        margin: 0 auto 40px auto;
+        max-width: 1200px;
+        color: #fff;
+    }
+
+    .uptime-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        color: #fff;
+    }
+
+    .alert-box {
+        background-color: red;
+        color: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: bold;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .machines-container {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        align-items: center;
+    }
+
+    .category {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .machine-card {
+        background-color: <%= settings.primaryColor || '#ec7d7a' %>;
+        border-radius: 8px;
+        padding: 20px;
+        width: 300px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .machine-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .machine-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .machine-tags {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .tag {
+        background-color: <%= settings.secondaryColor || '#e74c3c' %>;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+    }
+
+    .machine-status {
+        font-size: 1rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .machine-status.ok {
+        color: #4caf50;
+    }
+
+    .machine-status.down {
+        color: #e74c3c;
+    }
+
+    .machine-ping {
+        font-size: 0.9rem;
+        color: #ccc;
+    }
+</style>
+
+<h1><%= settings.siteH1 || 'Bienvenue sur notre site' %></h1>
+
+<% if (settings.displayDescription && settings.siteDescription) { %>
+    <div class="description-box">
+        <p><%= settings.siteDescription %></p>
+    </div>
+<% } %>
+
+<!-- Conteneur pour toutes les catégories -->
+<div class="uptime-container">
+    <% if (alertMessage) { %>
+        <div class="alert-box">
+            <%= alertMessage %>
+        </div>
+    <% } %>
+    <div class="machines-container">
+        <!-- Section WEB -->
+        <div class="category" id="web-body"></div>
+
+        <!-- Section CLOUD -->
+        <div class="category" id="cloud-body"></div>
+
+        <!-- Section TELECOM -->
+        <div class="category" id="telecom-body"></div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+
+    const categories = {
+        WEB: document.getElementById('web-body'),
+        CLOUD: document.getElementById('cloud-body'),
+        TELECOM: document.getElementById('telecom-body')
+    };
+
+    // Réception des statuts des machines
+    socket.on('machine-status', (data) => {
+        const categoryBody = categories[data.category];
+        if (!categoryBody) return;
+
+        let card = document.getElementById(data.name);
+        if (!card) {
+            card = document.createElement('div');
+            card.className = 'machine-card';
+            card.id = data.name;
+            categoryBody.appendChild(card);
+        }
+
+        card.innerHTML = `
+            <div class="machine-name">${data.name}</div>
+            <div class="machine-tags">
+                ${data.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+            </div>
+            <div class="machine-status ${data.status.toLowerCase()}">${data.status}</div>
+            <div class="machine-ping">Ping: ${data.responseTime} ms</div>
+        `;
+    });
+
+    // Réception des alertes
+    socket.on('alert', (message) => {
+        const alertBox = document.querySelector('.alert-box');
+        if (message) {
+            alertBox.style.display = "block";
+            alertBox.textContent = message;
+        } else {
+            alertBox.style.display = "none";
+        }
+    });
+</script>
+
+<%- include('./admin/includes/footer') %>

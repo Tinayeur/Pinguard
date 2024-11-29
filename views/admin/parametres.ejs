@@ -1,0 +1,243 @@
+<%- include('./includes/head') %>
+<%- include('./includes/navbar_g2') %>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        background-color: <%= settings.backgroundColor || '#ccc9c9' %>;
+        color: #333;
+    }
+
+    .settings-container {
+        margin-left: 250px; /* Décalage pour la barre de navigation */
+        padding: 40px;
+        min-height: 100vh;
+        width: calc(100% - 250px);
+        background-color: <%= settings.backgroundColor || '#f7f9fc' %>;
+        box-sizing: border-box;
+    }
+
+    .settings-container h1 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        color: <%= settings.primaryColor || '#2980b9' %>;
+    }
+
+    form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 12px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        border-color: <%= settings.primaryColor || '#2980b9' %>;
+        outline: none;
+    }
+
+    .form-group input[type="color"] {
+        width: 60px;
+        height: 40px;
+        padding: 0;
+        cursor: pointer;
+    }
+
+    .form-group textarea {
+        resize: none;
+    }
+
+    .form-actions {
+        grid-column: span 2; /* S'étend sur deux colonnes */
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    button {
+        background-color: <%= settings.secondaryColor || '#e74c3c' %>;
+        color: #fff;
+        padding: 15px 20px;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        text-transform: uppercase;
+    }
+
+    button:hover {
+        background-color: <%= settings.primaryColor || '#2980b9' %>;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        margin-right: 10px;
+        transform: scale(1.2);
+        cursor: pointer;
+    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    <style>
+    /* Scoper les styles uniquement à .settings-page */
+    .settings-page .settings-container {
+        margin: 0 auto;
+        padding: 40px;
+        background-color: <%= settings.backgroundColor || '#f7f9fc' %>;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .settings-page .settings-container h1 {
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        color: <%= settings.primaryColor || '#2980b9' %>;
+    }
+
+    .settings-page .form-group {
+        margin-bottom: 20px;
+    }
+
+    .settings-page .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .settings-page .form-group input,
+    .settings-page .form-group textarea,
+    .settings-page .form-group select {
+        width: 100%;
+        padding: 12px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .settings-page .form-group input:focus,
+    .settings-page .form-group textarea:focus,
+    .settings-page .form-group select:focus {
+        border-color: <%= settings.primaryColor || '#2980b9' %>;
+        outline: none;
+    }
+
+    .settings-page button {
+        background-color: <%= settings.secondaryColor || '#e74c3c' %>;
+        color: #fff;
+        padding: 15px 20px;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        text-transform: uppercase;
+    }
+
+    .settings-page button:hover {
+        background-color: <%= settings.primaryColor || '#2980b9' %>;
+    }
+
+
+</style>
+
+<div class="settings-container">
+    <h1>Paramètres du site</h1>
+    <form id="settings-form" method="POST" action="/admin/parametres" enctype="multipart/form-data">
+        <!-- Titre du site -->
+        <div class="form-group">
+            <label for="siteTitle">Titre du site</label>
+            <input type="text" name="siteTitle" id="siteTitle" value="<%= settings.siteTitle %>" required>
+        </div>
+
+        <!-- Description du site -->
+        <div class="form-group">
+            <label for="siteDescription">Description du site</label>
+            <textarea name="siteDescription" id="siteDescription" rows="4" required><%= settings.siteDescription %></textarea>
+            <div class="checkbox-group">
+                <input 
+                    type="checkbox" 
+                    name="displayDescription" 
+                    id="displayDescription" 
+                    value="true" 
+                    <%= settings.displayDescription ? 'checked' : '' %>
+                >
+                <label for="displayDescription">Afficher la description</label>
+            </div>
+        </div>
+
+        <!-- Couleurs -->
+        <div class="form-group">
+            <label for="backgroundColor">Couleur du fond</label>
+            <input type="color" name="backgroundColor" id="backgroundColor" value="<%= settings.backgroundColor || '#ccc9c9' %>">
+        </div>
+        <div class="form-group">
+            <label for="primaryColor">Couleur primaire</label>
+            <input type="color" name="primaryColor" id="primaryColor" value="<%= settings.primaryColor || '#ec7d7a' %>">
+        </div>
+        <div class="form-group">
+            <label for="secondaryColor">Couleur secondaire</label>
+            <input type="color" name="secondaryColor" id="secondaryColor" value="<%= settings.secondaryColor || '#e74c3c' %>">
+        </div>
+
+        <!-- Logo -->
+        <div class="form-group">
+            <label for="logo">Logo du site</label>
+            <input type="file" name="logo" id="logo">
+        </div>
+
+        <!-- Favicon -->
+        <div class="form-group">
+            <label for="favicon">Favicon</label>
+            <input type="file" name="favicon" id="favicon">
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+            <button type="submit">Enregistrer</button>
+        </div>
+    </form>
+</div>
+
+
+<%- include('./includes/footer2') %>
